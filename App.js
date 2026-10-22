@@ -14,68 +14,78 @@ import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
 
 
-const LISTA_DESTINOS = [
+const LISTA_PLACES = [
   {
     id: '1',
-    nome: 'Paris, França',
+    nome: 'The Ritz Paris',
+    local: 'Paris, França',
+    preco: '200$/noite',
+    producao: 'Código da Vinci',
     imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
   },
   {
     id: '2',
-    nome: 'Tóquio, Japão',
+    nome: 'Park Hyatt Tokyo',
+    local: 'Tóquio, Japão',
+    preco: '250$/noite',
+    producao: 'Lost in Translation',
     imagemUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400',
   },
   {
     id: '3',
-    nome: 'Rio de Janeiro, Brasil',
+    nome: 'Copacabana Palace',
+    local: 'Rio de Janeiro, Brasil',
+    preco: '100$/noite',
+    producao: 'Voando para o Rio (1993)',
     imagemUrl: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=400',
   },
   {
     id: '4',
-    nome: 'Nova York, EUA',
+    nome: 'The Plaza Hotel',
+    local: 'Nova York, EUA',
+    preco: '300$/noite',
+    producao: 'Esqueceram de mim 2 e O Grande Gatsby',
     imagemUrl: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400',
   },
   {
     id: '5',
-    nome: 'Roma, Itália',
+    nome: 'The St. Regis Home',
+    local: 'Roma, Itália',
+    preco: '180$/noite',
+    producao: 'O Talentoso Mr. Ripley',
     imagemUrl: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400',
   },
 ];
 
-const DETALHES_DESTINO = [
+const DETALHES_PLACES = [
   {
     id: 'd1',
     titulo: 'Arquitetura e Gastronomia',
     imagemUrl: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=400',
-    // 35 palavras
     descricao: 'Explore monumentos históricos fascinantes e saboreie pratos culinários premiados ao redor de restaurantes tradicionais. A combinação de receitas seculares com arquitetura preservada oferece uma experiência inesquecível para todos os visitantes exigentes que buscam cultura.',
   },
   {
     id: 'd2',
     titulo: 'Paisagens Naturais e Parques',
     imagemUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400',
-    // 34 palavras
     descricao: 'Desfrute de parques arborizados e praias de águas cristalinas com vistas panorâmicas impressionantes durante o pôr do sol. O contato com a natureza proporciona momentos de relaxamento profundo e renovação de energias para a rotina diária.',
   },
   {
     id: 'd3',
     titulo: 'Museus e Arte Contemporânea',
     imagemUrl: 'https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=400',
-    // 36 palavras
     descricao: 'Visite galerias consagradas que abrigam coleções de artistas renascentistas e exposições modernas e interativas. A riqueza cultural presente nesses espaços educativos permite mergulhar fundo na história do pensamento humano e nas expressões artísticas globais.',
   },
   {
     id: 'd4',
     titulo: 'Vida Noturna e Entretenimento',
     imagemUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400',
-    // 33 palavras
     descricao: 'Aproveite shows ao vivo, teatros renomados e festivais de música que movimentam as noites locais com muita energia. A diversidade de entretenimento atrai pessoas de todas as idades para celebrar momentos de muita diversão.',
   },
   {
     id: 'd5',
     titulo: 'Mercados Locais e Compras',
     imagemUrl: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=400',
-    // 32 palavras
     descricao: 'Caminhe por feiras de artesanato e centros comerciais para encontrar lembranças exclusivas, especiarias exóticas e lembrancinhas feitas à mão. Negociar com os produtores locais garante compras autênticas e experiências culturais memoráveis durante o passeio.',
   },
 ];
@@ -92,16 +102,31 @@ export default function App() {
   const [comentarios, setComentarios] = useState('');
 
   // 2 Pickers
-  const [tipoViagem, setTipoViagem] = useState('lazer');
-  const [transporte, setTransporte] = useState('aviao');
+  const [quarto, setQuarto] = useState('simples');
+  const [pagamento, setPagamento] = useState('credito');
 
+  // Data
+  const [dataViagem, setDataViagem] = useState('');
+  const handleDataChange = (text) => {
+    // Remove tudo que não for dígito
+    const cleaned = text.replace(/\D/g, '');
+    let formatted = cleaned;
+
+    if (cleaned.length > 2 && cleaned.length <= 4) {
+      formatted = `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
+    } else if (cleaned.length > 4) {
+      formatted = `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}/${cleaned.slice(4, 8)}`;
+    }
+
+    setDataViagem(formatted);
+  };
   // 2 Sliders
   const [diasViagem, setDiasViagem] = useState(7);
-  const [orcamento, setOrcamento] = useState(2500);
+  const [quantidadePessoas, setQuantidadePessoas] = useState(1);
 
   // 2 Switches
   const [receberNotificacoes, setReceberNotificacoes] = useState(true);
-  const [aceitaTermos, setAceitaTermos] = useState(false);
+  const [incluiCafe, setIncluiCafe] = useState(false);
 
   // Mensagem de retorno dos botões
   const [mensagem, setMensagem] = useState(null); // { titulo, texto, tipo }
@@ -115,8 +140,8 @@ export default function App() {
   // Funções dos Botões 
   const acaoBotao1 = () => {
     setMensagem({
-      titulo: 'Resumo do Cadastro',
-      texto: `Nome: ${nome || 'Não informado'}\nEmail: ${email || 'Não informado'}\nTipo: ${tipoViagem}\nDias: ${diasViagem}`,
+      titulo: 'Reserva concluída com sucesso',
+      texto: `Um e-mail com o link de pagamento será enviado para ${email || 'Não informado'}`,
       tipo: 'info',
     });
   };
@@ -126,7 +151,13 @@ export default function App() {
     setEmail('');
     setCidadeOrigem('');
     setComentarios('');
-    setAceitaTermos(false);
+    setDataViagem('');
+    setQuarto('simples');
+    setPagamento('credito');
+    setDiasViagem(7);
+    setQuantidadePessoas(1);
+    setReceberNotificacoes(true);
+    setIncluiCafe(false);
     setMensagem({
       titulo: 'Sucesso',
       texto: 'Formulário limpo com sucesso!',
@@ -138,7 +169,8 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
 
-        <Text style={styles.tituloPrincipal}>Guia de Viagens</Text>
+        <Text style={styles.tituloPrincipal}>Iplace</Text>
+        <Text style={styles.subtitulo}>Se hospede no local do seu filme ou livro favorito!</Text>
 
         {telaAtual === 'lista' ? (
           <View>
@@ -147,17 +179,26 @@ export default function App() {
               style={styles.imagemTopo}
             />
 
-            {LISTA_DESTINOS.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.cardLista}
-                onPress={() => abrirDetalhes(item)}
-              >
-                <Image source={{ uri: item.imagemUrl }} style={styles.imagemCard} />
-                <View style={styles.infoCard}>
+            {LISTA_PLACES.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.cardLista}
+              onPress={() => abrirDetalhes(item)}
+            >
+              <Image source={{ uri: item.imagemUrl }} style={styles.imagemCard} />
+
+              <View style={styles.infoCard}>
+                <View style={styles.colunaEsquerda}>
                   <Text style={styles.nomeCard}>{item.nome}</Text>
+                  <Text style={styles.producaoCard}>{item.producao}</Text>
                 </View>
-              </TouchableOpacity>
+
+                <View style={styles.colunaDireita}>
+                  <Text style={styles.textoDireita}>{item.local}</Text>
+                  <Text style={styles.precoCard}>{item.preco}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
             ))}
           </View>
         ) : (
@@ -170,10 +211,10 @@ export default function App() {
             </TouchableOpacity>
 
             <Text style={styles.subtitulo}>
-              Detalhes de: {itemSelecionado?.nome}
+              Conheça {itemSelecionado?.nome}, o lugar onde {itemSelecionado?.producao} ganhou vida! E tenha acesso a prestigiada cultura de {itemSelecionado?.local}:
             </Text>
 
-            {DETALHES_DESTINO.map((detalhe) => (
+            {DETALHES_PLACES.map((detalhe) => (
               <View key={detalhe.id} style={styles.cardDetalhe}>
                 <Image source={{ uri: detalhe.imagemUrl }} style={styles.imagemDetalhe} />
                 <Text style={styles.tituloDetalhe}>{detalhe.titulo}</Text>
@@ -183,7 +224,7 @@ export default function App() {
 
             <View style={styles.secaoParte3}>
               <Text style={styles.subtituloForm}>
-                Planeje sua Viagem
+                Reserve:
               </Text>
 
               <Text style={styles.label}>1. Nome Completo:</Text>
@@ -220,29 +261,39 @@ export default function App() {
                 onChangeText={setComentarios}
               />
 
-              <Text style={styles.label}>Tipo de Viagem:</Text>
+              <Text style={styles.label}>Quarto escolhido:</Text>
               <View style={styles.pickerContainer}>
                 <Picker
-                  selectedValue={tipoViagem}
-                  onValueChange={(itemValue) => setTipoViagem(itemValue)}
+                  selectedValue={quarto}
+                  onValueChange={(itemValue) => setQuarto(itemValue)}
                 >
-                  <Picker.Item label="Lazer / Férias" value="lazer" />
-                  <Picker.Item label="Trabalho / Negócios" value="trabalho" />
-                  <Picker.Item label="Aventura" value="aventura" />
+                  <Picker.Item label="Quarto simples (1 cama)" value="simples" />
+                  <Picker.Item label="Suite master (2 camas)" value="master" />
+                  <Picker.Item label="Suite hiper (3 camas)" value="blaster" />
                 </Picker>
               </View>
 
-              <Text style={styles.label}>Meio de Transporte Preferido:</Text>
+              <Text style={styles.label}>Tipo de pagamento:</Text>
               <View style={styles.pickerContainer}>
                 <Picker
-                  selectedValue={transporte}
-                  onValueChange={(itemValue) => setTransporte(itemValue)}
+                  selectedValue={pagamento}
+                  onValueChange={(itemValue) => setPagamento(itemValue)}
                 >
-                  <Picker.Item label="Avião" value="aviao" />
-                  <Picker.Item label="Carro" value="carro" />
-                  <Picker.Item label="Ônibus" value="onibus" />
+                  <Picker.Item label="Credito" value="credito" />
+                  <Picker.Item label="Debito" value="debito" />
+                  <Picker.Item label="Pix" value="pix" />
                 </Picker>
               </View>
+
+              <Text style={styles.label}>Data de início:</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="DD/MM/AAAA"
+                keyboardType="numeric"
+                maxLength={10}
+                value={dataViagem}
+                onChangeText={handleDataChange}
+              />
 
               <Text style={styles.label}>Duração da viagem (Dias): {diasViagem}</Text>
               <Slider
@@ -254,15 +305,23 @@ export default function App() {
                 minimumTrackTintColor="#1e90ff"
               />
 
-              <Text style={styles.label}>Orçamento Estimado: R$ {orcamento}</Text>
+              <Text style={styles.label}>Quantidade de pessoas: {quantidadePessoas}</Text>
               <Slider
-                minimumValue={500}
-                maximumValue={10000}
-                step={250}
-                value={orcamento}
-                onValueChange={setOrcamento}
+                minimumValue={1}
+                maximumValue={10}
+                step={1}
+                value={quantidadePessoas}
+                onValueChange={setQuantidadePessoas}
                 minimumTrackTintColor="#2ed573"
               />
+
+              <View style={styles.switchRow}>
+                <Text style={styles.labelSwitch}>Incluir café da manhã</Text>
+                <Switch
+                  value={incluiCafe}
+                  onValueChange={setIncluiCafe}
+                />
+              </View>
 
               <View style={styles.switchRow}>
                 <Text style={styles.labelSwitch}>Receber Notificações:</Text>
@@ -272,21 +331,13 @@ export default function App() {
                 />
               </View>
 
-              <View style={styles.switchRow}>
-                <Text style={styles.labelSwitch}>Aceito os Termos:</Text>
-                <Switch
-                  value={aceitaTermos}
-                  onValueChange={setAceitaTermos}
-                />
-              </View>
-
               <View style={styles.containerBotoes}>
                 <TouchableOpacity
                   style={[styles.botao, { backgroundColor: '#1e90ff' }]}
                   onPress={acaoBotao1}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.textoBotao}>Enviar Cadastro (Botão 1)</Text>
+                  <Text style={styles.textoBotao}>Reservar</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -294,7 +345,7 @@ export default function App() {
                   onPress={acaoBotao2}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.textoBotao}>Limpar Campos (Botão 2)</Text>
+                  <Text style={styles.textoBotao}>Limpar Campos</Text>
                 </TouchableOpacity>
               </View>
 
@@ -338,8 +389,9 @@ const styles = StyleSheet.create({
     color: '#2f3542',
   },
   subtitulo: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
     marginBottom: 12,
     color: '#57606f',
   },
@@ -374,7 +426,32 @@ const styles = StyleSheet.create({
   infoCard: {
     flex: 1,
     marginLeft: 12,
-    justifyContent: 'center',
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center',
+  },
+  colunaEsquerda: {
+    flex: 1, 
+    marginRight: 8,
+  },
+  colunaDireita: {
+    alignItems: 'flex-end',
+  },
+  producaoCard: {
+  fontSize: 13,
+  color: '#747d8c',
+  marginTop: 2,
+  },
+  textoDireita: {
+    fontSize: 12,
+    color: '#747d8c',
+    textAlign: 'right',
+  },
+  precoCard: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#2ed573',
+    marginTop: 2,
   },
   nomeCard: {
     fontSize: 16,
