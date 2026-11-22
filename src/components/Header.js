@@ -5,7 +5,7 @@ export default function Header() {
   return (
     <>
       <Text style={styles.tituloPrincipal}>Iplace</Text>
-      <Text style={styles.subtitulo}>Se hospede no local do seu filme ou livro favorito!</Text>
+      <Text style={styles.subtitulo}>Se hospede no hotel onde seu filme favorito foi gravado!</Text>
     </>
   );
 }

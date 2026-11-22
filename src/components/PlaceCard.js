@@ -1,22 +1,27 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function PlaceCard({ item, onPress }) {
   return (
     <TouchableOpacity style={styles.cardLista} onPress={onPress}>
-      <Image source={{ uri: item.imagemUrl }} style={styles.imagemCard} />
+      {item.imagemUrl ? (
+        <Image source={{ uri: item.imagemUrl }} style={styles.imagemCard} />
+      ) : (
+        <View style={[styles.imagemCard, styles.semImagem]}>
+          <Ionicons name="bed-outline" size={32} color="#a4b0be" />
+        </View>
+      )}
 
       <View style={styles.infoCard}>
-        <View style={styles.colunaEsquerda}>
-          <Text style={styles.nomeCard}>{item.nome}</Text>
-          <Text style={styles.producaoCard}>{item.producao}</Text>
-        </View>
-
-        <View style={styles.colunaDireita}>
-          <Text style={styles.textoDireita}>{item.local}</Text>
-          <Text style={styles.precoCard}>{item.preco}</Text>
-        </View>
+        <Text style={styles.nomeCard}>{item.hotel}</Text>
+        <Text style={styles.producaoCard}>
+          {item.filme}{item.ano ? ` (${item.ano})` : ''}
+        </Text>
+        <Text style={styles.textoLocal}>{item.pais}</Text>
       </View>
+
+      <Ionicons name="chevron-forward" size={20} color="#a4b0be" />
     </TouchableOpacity>
   );
 }
@@ -24,6 +29,7 @@ export default function PlaceCard({ item, onPress }) {
 const styles = StyleSheet.create({
   cardLista: {
     flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#ffffff',
     borderRadius: 8,
     marginBottom: 12,
@@ -38,19 +44,14 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 6,
   },
+  semImagem: {
+    backgroundColor: '#f1f2f6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   infoCard: {
     flex: 1,
-    marginLeft: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  colunaEsquerda: {
-    flex: 1,
-    marginRight: 8,
-  },
-  colunaDireita: {
-    alignItems: 'flex-end',
+    marginHorizontal: 12,
   },
   nomeCard: {
     fontSize: 16,
@@ -59,18 +60,12 @@ const styles = StyleSheet.create({
   },
   producaoCard: {
     fontSize: 13,
-    color: '#747d8c',
+    color: '#1e90ff',
     marginTop: 2,
   },
-  textoDireita: {
+  textoLocal: {
     fontSize: 12,
     color: '#747d8c',
-    textAlign: 'right',
-  },
-  precoCard: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#2ed573',
     marginTop: 2,
   },
 });
