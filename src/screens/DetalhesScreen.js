@@ -7,7 +7,7 @@ import useReservaForm from '../hooks/useReservaForm';
 
 export default function DetalhesScreen({ route }) {
   const { item } = route.params;
-  const form = useReservaForm();
+  const form = useReservaForm(item);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>

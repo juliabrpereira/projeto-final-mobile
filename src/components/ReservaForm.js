@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
 
@@ -120,9 +120,14 @@ export default function ReservaForm({ form }) {
         <TouchableOpacity
           style={[styles.botao, { backgroundColor: '#1e90ff' }]}
           onPress={form.reservar}
+          disabled={form.enviando}
           activeOpacity={0.7}
         >
-          <Text style={styles.textoBotao}>Reservar</Text>
+          {form.enviando ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.textoBotao}>Reservar</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity

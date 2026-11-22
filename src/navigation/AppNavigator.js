@@ -1,38 +1,43 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeStack from './HomeStack';
-import PerfilScreen from '../screens/PerfilScreen';
+import DrawerNavigator from './DrawerNavigator';
+import Carregando from '../components/Carregando';
+import LoginScreen from '../screens/LoginScreen';
+import useUsuario from '../hooks/useUsuario';
 
-const Drawer = createDrawerNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
+  const { usuario, iniciando } = useUsuario();
+
+  if (iniciando) {
+    return (
+      <View style={styles.carregando}>
+        <Carregando mensagem="Carregando..." />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Drawer.Navigator
-        screenOptions={{
-          drawerActiveTintColor: '#1e90ff',
-          headerTintColor: '#2f3542',
-        }}
-      >
-        <Drawer.Screen
-          name="Inicio"
-          component={HomeStack}
-          options={{
-            title: 'Início',
-            drawerIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} />,
-          }}
-        />
-        <Drawer.Screen
-          name="Perfil"
-          component={PerfilScreen}
-          options={{
-            drawerIcon: ({ color, size }) => <Ionicons name="person-outline" color={color} size={size} />,
-          }}
-        />
-      </Drawer.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {usuario ? (
+          <Stack.Screen name="App" component={DrawerNavigator} />
+        ) : (
+          <Stack.Screen name="Login" component={LoginScreen} />
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  carregando: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#f5f6fa',
+  },
+});

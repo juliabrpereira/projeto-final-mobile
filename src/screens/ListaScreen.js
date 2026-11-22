@@ -7,7 +7,7 @@ import PlaceCard from '../components/PlaceCard';
 import useHoteisFilmagem from '../hooks/useHoteisFilmagem';
 
 export default function ListaScreen({ navigation }) {
-  const { hoteis, carregando, erro, recarregar } = useHoteisFilmagem();
+  const { hoteis, carregando, erro, usandoCache, recarregar } = useHoteisFilmagem();
   const [busca, setBusca] = useState('');
 
   const termo = busca.trim().toLowerCase();
@@ -55,7 +55,10 @@ export default function ListaScreen({ navigation }) {
             onChangeText={setBusca}
           />
           {!carregando && !erro && (
-            <Text style={styles.contador}>{hoteisFiltrados.length} hotéis encontrados</Text>
+            <Text style={styles.contador}>
+              {hoteisFiltrados.length} hotéis encontrados
+              {usandoCache ? ' · dados salvos no aparelho' : ''}
+            </Text>
           )}
         </View>
       }

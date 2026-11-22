@@ -1,15 +1,24 @@
 import { useState } from 'react';
 
-export default function useReservaForm() {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [cidadeOrigem, setCidadeOrigem] = useState('');
+import useUsuario from './useUsuario';
+
+export default function useReservaForm(item) {
+  const { usuario, preferencias, adicionarReserva } = useUsuario();
+
+  const [nome, setNome] = useState(usuario.nome);
+  const [email, setEmail] = useState(usuario.email);
+  const [cidadeOrigem, setCidadeOrigem] = useState(usuario.cidade);
   const [comentarios, setComentarios] = useState('');
-
-  const [quarto, setQuarto] = useState('simples');
-  const [pagamento, setPagamento] = useState('credito');
-
+  const [quarto, setQuarto] = useState(preferencias.quarto);
+  const [pagamento, setPagamento] = useState(preferencias.pagamento);
   const [dataViagem, setDataViagem] = useState('');
+  const [diasViagem, setDiasViagem] = useState(7);
+  const [quantidadePessoas, setQuantidadePessoas] = useState(1);
+  const [receberNotificacoes, setReceberNotificacoes] = useState(preferencias.notificacoes);
+  const [incluiCafe, setIncluiCafe] = useState(preferencias.cafe);
+  const [mensagem, setMensagem] = useState(null);
+  const [enviando, setEnviando] = useState(false);
+
   const handleDataChange = (text) => {
     const cleaned = text.replace(/\D/g, '');
     let formatted = cleaned;
@@ -23,34 +32,62 @@ export default function useReservaForm() {
     setDataViagem(formatted);
   };
 
-  const [diasViagem, setDiasViagem] = useState(7);
-  const [quantidadePessoas, setQuantidadePessoas] = useState(1);
+  const reservar = async () => {
+    if (!nome.trim() || !email.includes('@') || dataViagem.length !== 10) {
+      setMensagem({
+        titulo: 'Dados incompletos',
+        texto: 'Preencha nome, e-mail e a data de início (DD/MM/AAAA).',
+        tipo: 'info',
+      });
+      return;
+    }
 
-  const [receberNotificacoes, setReceberNotificacoes] = useState(true);
-  const [incluiCafe, setIncluiCafe] = useState(false);
-
-  const [mensagem, setMensagem] = useState(null);
-
-  const reservar = () => {
-    setMensagem({
-      titulo: 'Reserva concluída com sucesso',
-      texto: `Um e-mail com o link de pagamento será enviado para ${email || 'Não informado'}`,
-      tipo: 'info',
-    });
+    setEnviando(true);
+    try {
+      await adicionarReserva({
+        hotel: item.hotel,
+        filme: item.filme,
+        nome,
+        email,
+        cidadeOrigem,
+        comentarios,
+        quarto,
+        pagamento,
+        dataViagem,
+        diasViagem,
+        quantidadePessoas,
+        incluiCafe,
+        receberNotificacoes,
+        criadaEm: new Date().toISOString(),
+      });
+      setMensagem({
+        titulo: 'Reserva concluída com sucesso',
+        texto: `Um e-mail com o link de pagamento será enviado para ${email}. Veja suas reservas no Perfil.`,
+        tipo: 'sucesso',
+      });
+    } catch {
+      setMensagem({
+        titulo: 'Erro ao reservar',
+        texto: 'Não foi possível salvar a reserva. Verifique sua conexão e tente novamente.',
+        tipo: 'info',
+      });
+    } finally {
+      setEnviando(false);
+    }
   };
 
   const limpar = () => {
-    setNome('');
-    setEmail('');
-    setCidadeOrigem('');
+    setNome(usuario.nome);
+    setEmail(usuario.email);
+    setCidadeOrigem(usuario.cidade);
     setComentarios('');
     setDataViagem('');
-    setQuarto('simples');
-    setPagamento('credito');
+    setQuarto(preferencias.quarto);
+    setPagamento(preferencias.pagamento);
     setDiasViagem(7);
     setQuantidadePessoas(1);
-    setReceberNotificacoes(true);
-    setIncluiCafe(false);
+    setReceberNotificacoes(preferencias.notificacoes);
+    setIncluiCafe(preferencias.cafe);
     setMensagem({
       titulo: 'Sucesso',
       texto: 'Formulário limpo com sucesso!',
@@ -83,6 +120,7 @@ export default function useReservaForm() {
     setIncluiCafe,
     mensagem,
     setMensagem,
+    enviando,
     reservar,
     limpar,
   };

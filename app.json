@@ -19,6 +19,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O iPlace precisa acessar suas fotos para definir a foto de perfil.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-font",
+      "@react-native-community/datetimepicker"
+    ]
   }
 }
